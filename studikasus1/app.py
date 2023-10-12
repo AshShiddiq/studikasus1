@@ -1,18 +1,40 @@
-from flask import Flask , render_template
+import os
 
+# import SQL untuk menggunakan bahasa SQL dalam python
+from cs50 import SQL
+# import tools untuk website
+from flask import Flask, flash, jsonify, redirect, render_template, request, session
+
+# mengatur nama aplikasi
 app = Flask(__name__)
 
-students = [
-    {"name" : "Sandrine", "score": 100},
-    {"name" : "Gergeley", "score": 87},
-    {"name" : "Frieda", "score": 92},
-    {"name" : "Fritz", "score": 40},
-    {"name" : "Sirius", "score": 75},
-]
+# dipakai untuk koneksi ke database
+db = SQL("sqlite:///score.db")
 
-@app.route('/')
+
+@app.route("/", methods=["GET", "POST"])
+# ketika route "/" dipanggil/diakses, maka fungsi index() dieksekusi
 def index():
-    return render_template("index.html", students=students)
+    # jika request yg dilakukan oleh pengguna adalah post, maka eksekusi kode dalam if
+    if request.method == "POST":
 
-if __name__ == "_main_":
-    app.run(debug=true)
+        # Access form data / membaca data yang diisilkan pada form
+        name = request.form.get("name")# ambil data dari input name
+        score = request.form.get("score")# ambil data dari imput month
+
+        # insert data into database, masukkan data name, month, day ke database
+        db.execute("INSERT INTO score(name, score) VALUES(?, ?)", name, score)
+        score_test = db.execute("select * from score")
+        print(score_test)
+        #index_test=db.execute("SELECT * ")
+
+        # Go back to homepage
+        return redirect("/")
+
+    else:
+
+        # ambil seluruh data dari tabel birthdays, simpan di variabel birthdays
+        students = db.execute("SELECT * FROM score")    
+
+        # salin isi variabel birthdays ke birthdays, lalu kirim ke index.html
+        return render_template("index.html", students=students)
