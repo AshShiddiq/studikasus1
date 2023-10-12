@@ -1,40 +1,30 @@
-import os
-
-# import SQL untuk menggunakan bahasa SQL dalam python
+from flask import Flask, render_template, request, redirect
 from cs50 import SQL
-# import tools untuk website
-from flask import Flask, flash, jsonify, redirect, render_template, request, session
 
-# mengatur nama aplikasi
 app = Flask(__name__)
-
-# dipakai untuk koneksi ke database
 db = SQL("sqlite:///score.db")
-
-
 @app.route("/", methods=["GET", "POST"])
-# ketika route "/" dipanggil/diakses, maka fungsi index() dieksekusi
 def index():
-    # jika request yg dilakukan oleh pengguna adalah post, maka eksekusi kode dalam if
-    if request.method == "POST":
+        if request.method == "POST": 
+            name = request.form.get("name")
+            score = request.form.get("score")
 
-        # Access form data / membaca data yang diisilkan pada form
-        name = request.form.get("name")# ambil data dari input name
-        score = request.form.get("score")# ambil data dari imput month
+            db.execute("INSERT INTO score (name, score) VALUES(?, ?)", name, score)
 
-        # insert data into database, masukkan data name, month, day ke database
-        db.execute("INSERT INTO score(name, score) VALUES(?, ?)", name, score)
-        score_test = db.execute("select * from score")
-        print(score_test)
-        #index_test=db.execute("SELECT * ")
+            return redirect("/")
+        else:
 
-        # Go back to homepage
+            students = db.execute("SELECT * FROM score")
+            return render_template("index.html", students=students)
+            
+@app.route("/edit/<id>", methods=["GET", "POST"])
+def edit_data(id):
+    if request.method == "GET":
+        score = db.execute("SELECT * FROM score WHERE id = ?", id)[0]
+        print(score)
+        return render_template("edit.html", score=score)
+    elif request.method == "POST":
+        score_name = request.form.get("name")
+        score_score = request.form.get("score")
+        db.execute('UPDATE score set name = ?, score = ? where id = ?', score_name, score_score, id)
         return redirect("/")
-
-    else:
-
-        # ambil seluruh data dari tabel birthdays, simpan di variabel birthdays
-        students = db.execute("SELECT * FROM score")    
-
-        # salin isi variabel birthdays ke birthdays, lalu kirim ke index.html
-        return render_template("index.html", students=students)

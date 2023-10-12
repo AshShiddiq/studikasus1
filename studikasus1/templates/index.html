@@ -3,42 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+    <title>Score Murid</title>
 <style>
     table, th, td {
-      border: 1px solid black;
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
     }
-    </style>
+</style>    
+</head>
 <body>
     <div class="container">
         <div class="section">
-            <form action="/" method="POST">
-                <input name="name" placeholder="Name" type="text">
-                <input name="score" placeholder="score" type="number" min="1" max="100">
-                <input type="submit" value="Add score">
-            </form>
+        <h2>Add a data</h2>
+        <form action="/" method="POST">
+            <input name="name" placeholder="name" type="text">
+            <input name="score" placeholder="score" type="number">
+            <input type="submit" value="add score">
+        </form>
         </div>
         <div class="section">
             <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>score</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for students in students %} 
-                    <tr>
-                        <td>{{students.name}}</td>
-                        <td>{{students.score}}
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>Score</th>
+                    <th>Edit</th>
+                </tr>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.score }}</td>
+                    <td>
+                        <a href="/edit/{{ student['id'] }}">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
             </table>
         </div>
     </div>
-  
 </body>
 </html>
